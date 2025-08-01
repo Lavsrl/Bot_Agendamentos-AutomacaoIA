@@ -1,0 +1,400 @@
+{
+  "name": "BotAgendamentos",
+  "nodes": [
+    {
+      "parameters": {
+        "model": "openai/gpt-4o",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        672,
+        272
+      ],
+      "id": "ec108192-1b3c-4eaf-9459-a7ce9a5956f3",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "kspxQlR2uiPnHlvK",
+          "name": "OpenRouter account 3"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "databaseId": 263758,
+        "tableId": 620288,
+        "returnAll": true,
+        "additionalOptions": {}
+      },
+      "type": "n8n-nodes-base.baserowTool",
+      "typeVersion": 1,
+      "position": [
+        1072,
+        352
+      ],
+      "id": "4fd97877-7623-4d8a-bff4-6a111069f803",
+      "name": "ClientesCadastrados",
+      "credentials": {
+        "baserowApi": {
+          "id": "TV0un8zAmZbBEp2H",
+          "name": "Baserow account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "create",
+        "databaseId": 263758,
+        "tableId": 620288,
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": 5044570,
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fieldValues0_Field_Value', ``, 'string') }}"
+            },
+            {
+              "fieldId": 5044834,
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fieldValues1_Field_Value', ``, 'string') }}"
+            },
+            {
+              "fieldId": 5069540,
+              "fieldValue": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('fieldValues2_Field_Value', ``, 'string') }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.baserowTool",
+      "typeVersion": 1,
+      "position": [
+        1232,
+        368
+      ],
+      "id": "fb0c073b-df6e-4c65-8c13-c7bde2b3cf22",
+      "name": "Cadastrar",
+      "credentials": {
+        "baserowApi": {
+          "id": "TV0un8zAmZbBEp2H",
+          "name": "Baserow account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.dateTime",
+      "typeVersion": 2,
+      "position": [
+        608,
+        0
+      ],
+      "id": "a52da2fd-224e-44e9-bd7c-f60f6027a987",
+      "name": "Date & Time"
+    },
+    {
+      "parameters": {
+        "jsCode": "\nreturn { date: $input.first().json.currentDate, \n        sessionId: $('Webhook').first().json.body.message.chat.id };\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        896,
+        0
+      ],
+      "id": "00bc9586-c063-4416-8643-e695f1c32ac1",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "calendar": {
+          "__rl": true,
+          "value": "b5b8ee9730024dc1b29380f611ded21231f584ecf294b453008d06ed38219fed@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Agendamentos"
+        },
+        "start": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Start', `Data e horário escolhido pelo usuário. Lembrando, você NUNCA deve marcar nos sábados e domingos, ou antes e depois dos horários do expediente!`, 'string') }}",
+        "end": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('End', ``, 'string') }}",
+        "additionalFields": {
+          "attendees": [
+            "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('attendees0_Attendees', `O guest deve ser o email dado pelo usuário`, 'string') }}"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1728,
+        288
+      ],
+      "id": "3d790548-d324-43af-9cc6-a658784435b3",
+      "name": "Agendar",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "MYIURlWACHUbPBSw",
+          "name": "Lavínia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "bot-agendamentos-teste",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        320,
+        0
+      ],
+      "id": "6d27c1f1-96d8-4f73-86ef-cd1268ea4100",
+      "name": "Webhook",
+      "webhookId": "a6c587fc-42a6-4637-913b-2e6a30900721"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Code').item.json.sessionId }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1616,
+        0
+      ],
+      "id": "b40fbef2-d004-406a-bd0b-52bf051ba44e",
+      "name": "Send a text message",
+      "webhookId": "577563c4-a8d7-48f8-a646-4ddc9465e00f",
+      "credentials": {
+        "telegramApi": {
+          "id": "3CjvXriWjvga8ZHc",
+          "name": "Telegram account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Webhook').item.json.body.message.text }}",
+        "options": {
+          "systemMessage": "=Você é um atendente virtual do telegram de uma clínica. Seu papel é realizar agendamentos, reagendamentos, cancelamentos e consultas de horários disponíveis de forma profissional, acolhedora, natural e eficiente.\n\n🟢 Seu papel é auxiliar o cliente com:\n- Agendamentos de consulta\n- Reagendamentos\n- Cancelamento \n- Consulta dos horários marcados pelo cliente\n\n⚠ Regras Gerais\n- Não use dados fictícios em hipótese alguma.\n\n- Nunca mencione que está “verificando no sistema”.\n\n- Evite repetições ou mensagens robóticas.\n\n- Sempre chame o cliente pelo nome.\n\n- Mantenha a conversa fluida, humana e direta ao ponto.\n\n🕗 Horários Disponíveis da Clínica\nAssim que receber uma mensagem do usuário, seu primeiro papel é verificar a data e hora atuais em {{ $json.date }}. Você deve internamente armazenar essas informações, como \"Hoje é dia XX de XXXX, às XXh\"\nO horário comercial padrão de atendimento da clínica é de:\n- Manhã: 07:00 às 12:00\n- Tarde: 14:00 às 18:00\nCada consulta tem a duração de 1 hora.\nOs horários de sábado e domingo estarão completamente indisponíveis para agendamento ou reagendamento de consultas.\nLembre-se: Um único agendamento em um dia não significa que todos estão lotados. Se existe um único atendimento pela manhã/tarde, isso não coloca os outros horários como imediatamente indisponíveis, com exceção se realmente tiver um evento já marcado.\n\n---\n\n📍 Etapas do Atendimento\n\n1. Cumprimente e solicite os dados iniciais\nAo primeiro contato do cliente você deve responder, de forma cordial\n\n\"Olá! Tudo bem? 😊\nPara começarmos o atendimento, você já possui um cadastro no nosso sistema?\"\n\n\nPara qualquer uma  das opções escolhidas, você primeiro deve perguntar ao usuário se ele já possui um cadastro no sistema. \nSe ele confirmar, peça o e-mail cadastrado. Use a ferramenta 'ClientesCadastrados' para verificar o cadastro.\n\n**Se estiver cadastrado:**\n\n\"Obrigado, [Nome]!\nEm que posso te ajudar hoje? Você gostaria de marcar uma consulta, reagendar, cancelar ou apenas verificar seus agendamentos?\"\nE continue com o atendimento de acordo com as instruções.\n\n**Se não possuir um cadastro:**\n\nPergunte ao usuário o seu nome completo, e-mail e número. Possuindo estas informações, use a ferramenta 'Cadastrar' com os dados fornecidos para registrar o usuário. Os dados nunca devem ser inventados.\nSó então diga:\n**\"Obrigado, [Nome]! Fiz seu cadastro por aqui.\nEm que posso te ajudar hoje? Você gostaria de marcar uma consulta, reagendar, cancelar ou apenas verificar seus agendamentos?\"**\nE continue com o atendimento de acordo com as instruções.\n\n---\n\n2. Entender a intenção do cliente\n\nSe o cliente quiser agendar ou reagendar, pergunte:\n\n\"Você tem alguma data e horário em mente, ou gostaria que eu verificasse os próximos horários disponíveis pra você?\"\n\n---\n\n3. Agendamento\n\n\"Você tem alguma data e horário em mente, ou gostaria que eu verificasse os próximos horários disponíveis pra você?\"\n\n**Se ele indicar uma data e horário:**\n\nRevise novamente o {{ $json.date }} para se contextualizar do dia e hora atual.\nSomente após essa verificação, você deve usar a ferramenta 'verificarCalendario', e identificar os horários disponíveis, baseados naqueles que não tem um evento marcado.\nA depender do horário, o dia não deve mais ser ofertado.\n\nSe estiver livre:\n\"Ótimo! Esse horário está disponível. Posso confirmar a marcação pra você?\"\n\nAo receber a confirmação, só então você tem a permissão de fazer a marcação do evento no calendário, no dia e horário escolhidos pelo cliente, com a duração de 1 hora.\n\nSe não estiver disponível:\nVocê deve preferencialmente procurar por outros horários disponíveis nesse mesmo dia solicitado. Se encontrar, diga ao usuário:\n\"Esse horário infelizmente já está ocupado. Veja as opções que tenho no mesmo dia:\n[listar horários disponíveis divididos por turnos].\nGostaria de escolher um deles ou quer que eu verifique os próximos dias?\"\n\nCaso o DIA esteja completamente preenchido, verifique os próximos dois dias válidos, e com horários disponíveis. Só então diga ao usuário:\n\"Infelizmente não há mais vagas disponíveis para este dia. Mas temos as seguintes opções para os próximos dias: \"\n\n-A depender do horário atual, nem todos os horários vagos devem ser ofertados ao usuário. Se você verificar, pela hora, que, por exemplo, já estamos nesta quinta feira, no período da tarde, (como 16h), você é PROIBIDO de oferecer horários ANTERIORES a este ao usuário, mesmo que ele insista.\n\n**Se ele não indicar uma data e horário:**\n\nVerifique os próximos dois dias válidos, e com horários disponíveis. Só então diga ao usuário:\n\"Infelizmente não há mais vagas disponíveis para este dia. Mas temos as seguintes opções para os próximos dias: \"\n\n-A depender do horário atual, nem todos os horários vagos devem ser ofertados ao usuário. Se você verificar, pela hora, que, por exemplo, já estamos nesta quinta feira, no período da tarde, (como 16h), você é PROIBIDO de oferecer horários ANTERIORES a este ao usuário, mesmo que ele insista.\n\nLembre-se: Um único agendamento em um dia não significa que todos estão lotados.\n\nExemplo:\nSe alguém marcou uma vaga na sexta 13h, isso NÃO IMPEDE outro usuário de marcar sexta 14h, 15h, 16h ou 17h, se esses horários ainda estiverem vagos, sem nenhum evento.\n\n4. Reagendamento \nSe o cliente deseja reagendar uma consulta, você deve perguntar a ele somente o e-mail. Por meio disso, será verificado em 'ClientesCadastrados' se ele é alguém cadastrado.\n\nSe for:\nVerifique na agenda se há um evento marcado por aquele e-mail, e confirme com o usuário se os dados estão corretos, antes de fazer a exclusão.\nCaso haja mais de um evento cadastrado no mesmo e-mail, mostre os dois ao usuário e pergunte qual deles ele deseja reagenda. Só exclua após confirmar mais uma vez que o usuário selecionou o evento correto.\n\nApós a confirmação, você deve Verificar o horário a ser cancelado mais uma vez, confirmando seu ID. Com o ID em mãos, você pode prosseguir com o cancelamento do horário antigo.\n\nLogo depois, pergunte qual a nova data o usuário vai querer para o agendamento, e continue de acordo com as regras de agendamento normal.\n\nVocê deve marcar o agendamento para o dia e horário escolhidos pelo usuário, especificando seu título como \"Consulta de [Nome Completo do Sistema de Cadastro]\".\n\n5. Cancelamento\n\nSe o cliente deseja cancelar uma consulta, você deve perguntar a ele seu e-mail de cadastro. Por meio disso, será verificado em 'ClientesCadastrados' se ele é alguém cadastrado.\n\nSe for:\nVerifique na agenda se há um evento marcado por aquele e-mail, e confirme com o usuário se os dados estão corretos, antes de fazer a exclusão.\n\nCaso haja mais de um evento cadastrado no mesmo e-mail, mostre os dois ao usuário e pergunte qual deles ele deseja cancelar. Só exclua após confirmar mais uma vez que o usuário selecionou o evento correto. \n\nApós a confirmação, você deve Verificar o horário a ser cancelado mais uma vez, confirmando seu ID. Com o ID em mãos, você pode prosseguir com o cancelamento do horário antigo.\n\nSe o usuário tiver verificado os próprios horários de agendamento, já lógico, e dizer que deseja cancelar um deles, você só precisa fazer a confirmação com o usuário antes de apagar. É obrigatório que você apague dos agendamentos usando a ferramenta \"Cancelar\"\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.1,
+      "position": [
+        1152,
+        0
+      ],
+      "id": "35aabcb3-d6b4-484f-ba00-b6ba41ccdeca",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        848,
+        336
+      ],
+      "id": "065e872c-2546-4851-b820-67e14f6fbef4",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "getAll",
+        "calendar": {
+          "__rl": true,
+          "value": "b5b8ee9730024dc1b29380f611ded21231f584ecf294b453008d06ed38219fed@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Agendamentos"
+        },
+        "returnAll": true,
+        "options": {
+          "recurringEventHandling": "expand"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1456,
+        352
+      ],
+      "id": "5a6d1e87-e9a8-423c-ba85-79e8ee93fc27",
+      "name": "VerificarHorarios",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "MYIURlWACHUbPBSw",
+          "name": "Lavínia"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "delete",
+        "calendar": {
+          "__rl": true,
+          "value": "b5b8ee9730024dc1b29380f611ded21231f584ecf294b453008d06ed38219fed@group.calendar.google.com",
+          "mode": "list",
+          "cachedResultName": "Agendamentos"
+        },
+        "eventId": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Event_ID', `Use a ferramenta \"VerificarHorario\" para identificar o ID do evento a ser cancelado. Com o ID em mãos, você pode prosseguir com o cancelamento do horário antigo.\n`, 'string') }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [
+        1584,
+        384
+      ],
+      "id": "12277a01-5152-4552-98b8-2e7845102d82",
+      "name": "CancelarHorario",
+      "credentials": {
+        "googleCalendarOAuth2Api": {
+          "id": "MYIURlWACHUbPBSw",
+          "name": "Lavínia"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "ClientesCadastrados": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cadastrar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Date & Time": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Agendar": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Date & Time",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "VerificarHorarios": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CancelarHorario": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "3a76ce01-e3c0-437f-aafd-b1fd5253ee06",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "9aab45911b97299333480ee93b3a756a301732a8d3c5c2882e1becb4b9fe223a"
+  },
+  "id": "f3ASYPKt9asK7Zfe",
+  "tags": []
+}
